@@ -1,132 +1,6 @@
 package Utils;
 
-//public class CSVUtils {
-//
-///**
-// * CSV Format illegal
-// */
-//public static class IllegalSyntaxException
-//    extends RuntimeException {
-//  IllegalSyntaxException() {
-//  }
-//}
-//
-//protected String                         m_string_;
-//protected LinkedList<LinkedList<String>> m_table_;
-//
-///**
-// * Get Next Token From the CSV File
-// *
-// * @return Next Token, empty if reach the end of file
-// * @throws IllegalSyntaxException If next token read in src is illegal
-// */
-//protected String NextToken() throws CSVUtils.IllegalSyntaxException {
-//  StringBuilder stringBuilder      = new StringBuilder(); // Return
-//  int           currentCharPos;                           // Store where we are processing, offset to begin of restString
-//  boolean       startWithQuotation = false;               // if start with Quotation
-//  boolean       hasQuotation       = false;               // if last character is Quotation
-//
-//  loop:
-//  for (currentCharPos = 0; currentCharPos < m_string_.length(); currentCharPos++) {
-//    char c = m_string_.charAt(currentCharPos);
-//    switch (c) {
-//      case ' ': default:
-//        if (startWithQuotation && hasQuotation) {
-//          throw new CSVUtils.IllegalSyntaxException();
-//        }
-//        stringBuilder.append(c);
-//        break;
-//      case '"':
-//        if (currentCharPos == 0) {
-//          startWithQuotation = true;
-//          hasQuotation       = false;
-//          continue;
-//        }
-//        if (startWithQuotation) {
-//          hasQuotation = ! hasQuotation;
-//          if (hasQuotation) {
-//            continue;
-//          }
-//        }
-//        stringBuilder.append(c);
-//        break;
-//      case ',': case '\r': case '\n':
-//        if (currentCharPos == 0) {
-//          stringBuilder.append(c);
-//          currentCharPos++;
-//          break loop;
-//        }
-//        if (! startWithQuotation || hasQuotation) {
-//          // Using short-circuit logic to present (!startWithQuotation) || (startWithQuotation && hasQuotation)
-//          break loop; // End the current token parsing
-//        }
-//        stringBuilder.append(c);
-//        break;
-//    }
-//  }
-//  m_string_ = m_string_.substring(currentCharPos);
-//  return stringBuilder.toString();
-//}
-//
-///**
-// * Parse CSV string provided with
-// *
-// * @param src Input String That prepared to be processed
-// * @return Processed CSV, all in String, Can be then put into an instance
-// */
-//public static CSVUtils ParseCSV(String src) {
-//  String v;
-//  var    csv = new CSVUtils(src);
-//  csv.m_table_ = new LinkedList<LinkedList<String>>();
-//  csv.m_table_.add(new LinkedList<>());
-//  int     rows        = 0;
-//  boolean lastSplitor = false;
-//  while (! (v = csv.NextToken()).isEmpty()) {
-//    char c = v.charAt(0);
-//    switch (c) {
-//      case '\n': case '\r': case ',':
-//        if (lastSplitor) {
-//          csv.m_table_.get(rows)
-//                      .add("");
-//        }
-//        if (c != ',') {
-//          csv.m_table_.add(new LinkedList<>());
-//          rows++;
-//        }
-//        lastSplitor = true;
-//        break;
-//      default:
-//        csv.m_table_.get(rows)
-//                    .add(v);
-//        lastSplitor = false;
-//        break;
-//    }
-//  }
-//  return csv;
-//}
-//
-//public String PortToString() {
-//  StringBuilder stringBuilder = new StringBuilder();
-//  for (var l : m_table_) {
-//    for (var e : l) {
-//      String c = "\"" + e.replace("\"", "\"\"") + "\"";
-//      stringBuilder.append(c);
-//    }
-//    stringBuilder.append('\n');
-//  }
-//  return stringBuilder.toString();
-//}
-//
-//protected CSVUtils() {
-//  m_string_ = "";
-//}
-//
-//protected CSVUtils(String src) {
-//  m_string_ = src;
-//}
-//
-//}
-
+import java.util.LinkedList;
 
 public class CSVUtils {
 
@@ -151,120 +25,189 @@ public static class IllegalSyntaxException
   }
 }
 
-/**
- * Get Next Token From source
- *
- * @param src Source String to be processed
- * @return Next token
- */
-public static String NextToken(String src) throws IllegalSyntaxException {
-  StringBuilder stringBuilder      = new StringBuilder();
-  boolean       startWithQuotation = false;
-  boolean       hasQuotation       = false;
+protected LinkedList<LinkedList<String>> m_table_;
 
-  loop:
-  for (int currentPosition = 0; ! src.isEmpty() && currentPosition < src.length(); currentPosition++) {
-    Character c = src.charAt(currentPosition);
-    switch (c) {
-      case ',': case '\n': case '\r':
-        if (0 == currentPosition) {
-          stringBuilder.append(c);
-        }
-        if (! startWithQuotation || hasQuotation) {
-          break loop;
-        }
-      case '"':
-        if (0 == currentPosition && '"' == c) {
-          startWithQuotation = true;
-        }
-        hasQuotation = ('"' == c) && (! (currentPosition == 0));
-      case ' ': default:
-        if (startWithQuotation && hasQuotation && c != '"') {
-          throw new IllegalSyntaxException();
-        }
-        stringBuilder.append(c);
-    }
-  }
-  return stringBuilder.toString();
+public LinkedList<LinkedList<String>> GetCSV() {
+  return m_table_;
 }
 
-/**
- * @param token Token to be parse
- * @return parsed token
- */
-public static String ParseToken(String token) throws IllegalSyntaxException {
-  StringBuilder stringBuilder      = new StringBuilder();
-  boolean       startWithQuotation = false;
-  boolean       hasQuotation       = false;
+public static class ReadCSV {
 
-  loop:
-  for (int currentPosition = 0; ! token.isEmpty() && currentPosition < token.length(); currentPosition++) {
-    Character c = token.charAt(currentPosition);
-    switch (c) {
-      case ' ': default:
-        if (startWithQuotation && hasQuotation) {
-          throw new CSVUtils.IllegalSyntaxException();
-        }
-        stringBuilder.append(c);
-        break;
-      case '"':
-        if (currentPosition == 0) {
-          startWithQuotation = true;
-          hasQuotation       = false;
-          continue;
-        }
-        if (startWithQuotation) {
-          hasQuotation = ! hasQuotation;
-          if (hasQuotation) {
+  /**
+   * Get Next Token From source
+   *
+   * @param src Source String to be processed
+   * @return Next token, emtpy if reaches end of string
+   * @throws IllegalSyntaxException If the source is not in a valid csv format
+   */
+  public static String NextToken(String src) throws IllegalSyntaxException {
+    StringBuilder stringBuilder      = new StringBuilder();
+    boolean       startWithQuotation = false;
+    boolean       hasQuotation       = false;
+
+    loop:
+    for (int currentPosition = 0; ! src.isEmpty() && currentPosition < src.length(); currentPosition++) {
+      Character c = src.charAt(currentPosition);
+      switch (c) {
+        case ',': case '\n': case '\r':
+          if (0 == currentPosition) {
+            stringBuilder.append(c);
+          }
+          if (! startWithQuotation || hasQuotation) {
+            break loop;
+          }
+        case '"':
+          if (0 == currentPosition && '"' == c) {
+            startWithQuotation = true;
+          }
+          hasQuotation = ('"' == c) && (! (currentPosition == 0));
+        case ' ': default:
+          if (startWithQuotation && hasQuotation && c != '"') {
+            throw new IllegalSyntaxException();
+          }
+          stringBuilder.append(c);
+      }
+    }
+    return stringBuilder.toString();
+  }
+
+  /**
+   * Parse Token to Final String
+   *
+   * @param token Token to be parse
+   * @return parsed token
+   */
+  public static String ParseToken(String token) throws IllegalSyntaxException {
+    StringBuilder stringBuilder      = new StringBuilder();
+    boolean       startWithQuotation = false;
+    boolean       hasQuotation       = false;
+
+    loop:
+    for (int currentPosition = 0; ! token.isEmpty() && currentPosition < token.length(); currentPosition++) {
+      Character c = token.charAt(currentPosition);
+      switch (c) {
+        case ' ': default:
+          if (startWithQuotation && hasQuotation) {
+            throw new CSVUtils.IllegalSyntaxException();
+          }
+          stringBuilder.append(c);
+          break;
+        case '"':
+          if (currentPosition == 0) {
+            startWithQuotation = true;
+            hasQuotation       = false;
             continue;
           }
-        }
-        stringBuilder.append(c);
-        break;
-      case ',': case '\r': case '\n':
-        if (currentPosition == 0) {
+          if (startWithQuotation) {
+            hasQuotation = ! hasQuotation;
+            if (hasQuotation) {
+              continue;
+            }
+          }
           stringBuilder.append(c);
-          break loop;
-        }
-        if (! startWithQuotation || hasQuotation) {
-          // Using short-circuit logic to present (!startWithQuotation) || (startWithQuotation && hasQuotation)
-          break loop; // End the current token parsing
-        }
-        stringBuilder.append(c);
-        break;
+          break;
+        case ',': case '\r': case '\n':
+          if (currentPosition == 0) {
+            stringBuilder.append(c);
+            break loop;
+          }
+          if (! startWithQuotation || hasQuotation) {
+            // Using short-circuit logic to present (!startWithQuotation) || (startWithQuotation && hasQuotation)
+            break loop; // End the current token parsing
+          }
+          stringBuilder.append(c);
+          break;
+      }
     }
+    if (startWithQuotation && ! hasQuotation) {
+      throw new IllegalSyntaxException();
+    }
+    return stringBuilder.toString();
   }
-  if (startWithQuotation && ! hasQuotation) {
-    throw new IllegalSyntaxException();
+
+
+  /**
+   * Parse Source String into CSVUtils object
+   *
+   * @param src Source String to be processed
+   * @return a csv object to be manipulated
+   */
+  public static CSVUtils ConstructCSV(String src) {
+    CSVUtils csvUtils = new CSVUtils();
+    csvUtils.m_table_ = new LinkedList<>();
+    boolean lastSplitor = false;
+    csvUtils.m_table_.add(new LinkedList<>());
+    String token;
+    char   c = '\0';
+    for (int rows = 0; ! (token = NextToken(src)).isEmpty(); ) {
+      c = token.charAt(0);
+      switch (c) {
+        case '\n': case '\r':
+          csvUtils.m_table_.add(new LinkedList<>());
+          rows++;
+        case ',':
+          if (lastSplitor) {
+            csvUtils.m_table_.get(rows - (c != ',' ? 1 : 0))
+                             .add("");
+          }
+          lastSplitor = true;
+          break;
+        default:
+          csvUtils.m_table_.get(rows)
+                           .add(ParseToken(token));
+          lastSplitor = false;
+          break;
+      }
+      src = src.substring(token.length());
+    }
+    if (c == '\n' || c == '\r') {
+      csvUtils.m_table_.removeLast();
+    }
+    return csvUtils;
   }
-  return stringBuilder.toString();
+
 }
 
-/**
- * @param src
- * @return
- */
-public static String GenerateToken(String src) {
-  StringBuilder stringBuilder = new StringBuilder();
-  return stringBuilder.toString();
-}
+public static class PortCSV {
 
-/**
- * @param src
- * @return
- */
-public static CSVUtils ConstructCSV(String src) {
-  CSVUtils csvUtils = new CSVUtils();
-  return csvUtils;
-}
+  /**
+   * Convert a string into a valid csv element token
+   *
+   * @param src string to be converted
+   * @return A token
+   */
+  public static String GenerateToken(String src) {
+    StringBuilder stringBuilder = new StringBuilder().append('"');
+    for (int i = 0; ! src.isEmpty() && i < src.length(); i++) {
+      char c = src.charAt(i);
+      switch (c) {
+        case '"':
+          stringBuilder.append("\"");
+        default:
+          stringBuilder.append(c);
+      }
+    }
+    return stringBuilder.append('"')
+                        .toString();
+  }
 
-/**
- * @param csv
- * @return
- */
-public static String GenerateContent(CSVUtils csv) {
-  StringBuilder stringBuilder = new StringBuilder();
-  return stringBuilder.toString();
+  /**
+   * Convert whole csv object into text
+   *
+   * @param csv csv to be ported
+   * @return formatted text
+   */
+  public static String GenerateContent(CSVUtils csv) {
+    StringBuilder stringBuilder = new StringBuilder();
+    for (var l : csv.m_table_) {
+      for (int i = 0; i < l.size(); i++) {
+        stringBuilder.append(l.get(i));
+        stringBuilder.append(i < l.size() - 1 ? "," : "");
+      }
+      stringBuilder.append('\n');
+    }
+    return stringBuilder.toString();
+  }
 }
 
 }

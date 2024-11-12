@@ -50,7 +50,7 @@ public void testNextToken() {
   };
 
   String r;
-  for (int i = 0; ! (r = CSVUtils.NextToken(s)).isEmpty() && i < testCases.length; i++) {
+  for (int i = 0; ! (r = CSVUtils.ReadCSV.NextToken(s)).isEmpty() && i < testCases.length; i++) {
     assertEquals(testCases[i], r);
     s = s.substring(r.length());
   }
@@ -81,18 +81,25 @@ public void testParseToken() {
   };
 
   String r;
-  for (int i = 0; ! (r = CSVUtils.NextToken(s)).isEmpty() && i < testCases.length; i++) {
-    assertEquals(testCases[i], CSVUtils.ParseToken(r));
+  for (int i = 0; ! (r = CSVUtils.ReadCSV.NextToken(s)).isEmpty() && i < testCases.length; i++) {
+    assertEquals(testCases[i], CSVUtils.ReadCSV.ParseToken(r));
     s = s.substring(r.length());
   }
 }
 
 @Test
-public void generateToken() {
+public void testGenerateToken() {
+  assertEquals("\"Student\"", CSVUtils.PortCSV.GenerateToken("Student"));
+  assertEquals("\",\"", CSVUtils.PortCSV.GenerateToken(","));
+  assertEquals("\"\"\"\"", CSVUtils.PortCSV.GenerateToken("\""));
+  assertEquals("\"12,\"", CSVUtils.PortCSV.GenerateToken("12,"));
+  assertEquals("\"\"\"\"\"\"", CSVUtils.PortCSV.GenerateToken("\"\""));
+
 }
 
 @Test
-public void constructCSV() {
+public void testConstructCSV() {
+  var v = CSVUtils.ReadCSV.ConstructCSV(testString);
 }
 
 @Test
