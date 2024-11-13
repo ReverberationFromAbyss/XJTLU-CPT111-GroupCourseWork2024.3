@@ -25,10 +25,46 @@ public static class IllegalSyntaxException
   }
 }
 
-protected LinkedList<LinkedList<String>> m_table_;
+protected LinkedList<LinkedList<String>> m_table_ = new LinkedList<>();
 
 public LinkedList<LinkedList<String>> GetCSV() {
   return m_table_;
+}
+
+public String GetElement(int row, int col) {
+  return m_table_.get(row)
+                 .get(col);
+}
+
+public void InsertLine() {
+  m_table_.add(new LinkedList<>());
+}
+
+public void InsertLine(int row) {
+  m_table_.add(row, new LinkedList<>());
+}
+
+public void InsertElement(int row, String val) {
+  m_table_.get(row)
+          .add(val);
+}
+
+public void SetLine(int ros, LinkedList<String> val) {
+  m_table_.set(ros, val);
+}
+
+public void SetElement(int row, int col, String val) {
+  m_table_.get(row)
+          .set(col, val);
+}
+
+public String RemoveElement(int row, int col) {
+  return m_table_.get(row)
+                 .remove(col);
+}
+
+public LinkedList<String> RemoveLine(int row) {
+  return m_table_.remove(row);
 }
 
 public static class ReadCSV {
@@ -209,5 +245,6 @@ public static class PortCSV {
     return stringBuilder.toString();
   }
 }
+
 
 }

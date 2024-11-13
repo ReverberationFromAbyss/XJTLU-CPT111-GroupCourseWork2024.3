@@ -6,7 +6,7 @@ import java.util.Date;
 public class PrivateLogger {
 private static PrivateLogger  s_Private_logger_instance_;
 private        BufferedWriter m_logfileStream_;
-private        TARGET         m_target_;
+private final  TARGET         m_target_;
 
 private PrivateLogger() {
   m_target_        = TARGET.CONSOLE;
@@ -21,7 +21,7 @@ private PrivateLogger(String fp) {
       m_logfileStream_ = new BufferedWriter(new FileWriter(fp));
     }
   } catch (IOException e) {
-    System.err.println(e);
+    System.err.println(e.getMessage());
   }
 }
 
