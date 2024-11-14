@@ -28,17 +28,17 @@ public static class QuestionLoader {
     var questionManagement = new QuestionManager();
     Arrays.stream(IOUtilities.readQuestions(fp))
           .collect(Collectors.groupingBy(Question::getTopic))
-          .forEach((x, y) -> {
-            questionManagement.m_question_.put(x, y.stream()
-                                                   .filter(q -> q.getOptions().length > 1 && ! q.getQuestionStatement()
-                                                                                                .isEmpty() &&
-                                                                Arrays.stream(q.getOptions())
-                                                                      .filter(Option::isCorrectAnswer)
-                                                                      .count() == 1)
-                                                   .toList()
-                                                   .stream()
-                                                   .collect(Collectors.groupingBy(Question::getDifficulty)));
-          });
+          .forEach((x, y) -> questionManagement.m_question_.put(x, y.stream()
+                                                                    .filter(q -> q.getOptions().length > 1 &&
+                                                                                 ! q.getQuestionStatement()
+                                                                                    .isEmpty() &&
+                                                                                 Arrays.stream(q.getOptions())
+                                                                                       .filter(Option::isCorrectAnswer)
+                                                                                       .count() == 1)
+                                                                    .toList()
+                                                                    .stream()
+                                                                    .collect(Collectors.groupingBy(
+                                                                        Question::getDifficulty))));
     return questionManagement;
   }
 

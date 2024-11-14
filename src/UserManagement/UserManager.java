@@ -18,6 +18,18 @@ public List<Users> GetUsers() {
 private final Map<String, Users> m_users_ = new HashMap<>();
 
 public void RegisterUser(Users usr) throws UserExistException, Users.UserInformationInvalidException {
+  if (usr.GetUserID()
+         .isEmpty()) {
+    throw new Users.UserInformationInvalidException("User ID cannot be empty.");
+  }
+  if (usr.GetUserName()
+         .isEmpty()) {
+    throw new Users.UserInformationInvalidException("User Name cannot be empty.");
+  }
+  if (usr.GetPasswd()
+         .isEmpty()) {
+    throw new Users.UserInformationInvalidException("User Password cannot be empty.");
+  }
   m_users_.forEach((x, y) -> {
     if (usr.GetUserID()
            .equals(y.GetUserID())) {
