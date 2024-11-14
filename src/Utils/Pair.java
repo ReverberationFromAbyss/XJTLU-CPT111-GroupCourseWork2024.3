@@ -6,8 +6,8 @@ import java.util.Map;
 public class Pair<L, R>
     implements Map.Entry<L, R>, Comparable<Pair<L, R>>, Serializable {
 
-private L m_l_;
-private R m_r_;
+private final L m_l_;
+private final R m_r_;
 
 @Override
 public L getKey() {

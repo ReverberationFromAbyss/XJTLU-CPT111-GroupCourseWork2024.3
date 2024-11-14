@@ -1,5 +1,6 @@
 package Utils;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class CSVUtils {
@@ -25,10 +26,32 @@ public static class IllegalSyntaxException
   }
 }
 
-protected LinkedList<LinkedList<String>> m_table_ = new LinkedList<>();
+protected LinkedList<ArrayList<String>> m_table_    = new LinkedList<>();
+protected boolean                       m_hasTitle_ = false;
+protected int                           m_rows_     = 0;
+protected int                           m_cols_     = 0;
 
-public LinkedList<LinkedList<String>> GetCSV() {
+public LinkedList<ArrayList<String>> GetCSV() {
   return m_table_;
+}
+
+public CSVUtils SetTitle(String... title) {
+  m_hasTitle_ = true;
+  m_cols_     = title.length;
+  m_table_.add(0, new ArrayList<>(m_cols_));
+  m_rows_++;
+  for (var t : title) {
+    m_table_.get(0)
+            .add(t);
+  }
+  return this;
+}
+
+public CSVUtils RemoveTitle() {
+  if (m_hasTitle_) {
+    m_table_.remove(0);
+  }
+  return this;
 }
 
 public String GetElement(int row, int col) {
@@ -36,35 +59,59 @@ public String GetElement(int row, int col) {
                  .get(col);
 }
 
-public void InsertLine() {
-  m_table_.add(new LinkedList<>());
+public CSVUtils InsertLine() {
+  m_table_.add(new ArrayList<>(m_cols_));
+  m_rows_++;
+  return this;
 }
 
-public void InsertLine(int row) {
-  m_table_.add(row, new LinkedList<>());
+public CSVUtils InsertLine(int row) {
+  m_table_.add(row, new ArrayList<>(m_cols_));
+  m_rows_++;
+  return this;
 }
 
-public void InsertElement(int row, String val) {
+public CSVUtils InsertElement(int row, String val) {
   m_table_.get(row)
           .add(val);
+  return this;
 }
 
-public void SetLine(int ros, LinkedList<String> val) {
+public CSVUtils SetLine(int ros, ArrayList<String> val) {
   m_table_.set(ros, val);
+  return this;
 }
 
-public void SetElement(int row, int col, String val) {
+public CSVUtils SetElement(int row, int col, String val) {
   m_table_.get(row)
           .set(col, val);
+  return this;
 }
 
-public String RemoveElement(int row, int col) {
+public String ClearElement(int row, int col) {
   return m_table_.get(row)
-                 .remove(col);
+                 .set(col, "");
 }
 
-public LinkedList<String> RemoveLine(int row) {
+public ArrayList<String> RemoveLine(int row) {
+  m_rows_--;
   return m_table_.remove(row);
+}
+
+public CSVUtils DetCols() {
+  if (m_hasTitle_) {
+    m_cols_ = m_table_.get(0)
+                      .size();
+  } else {
+    for (var l : m_table_) {
+      m_cols_ = Math.max(m_cols_, l.size());
+    }
+  }
+  return this;
+}
+
+public CSVUtils ReSetCols() {
+  return this;
 }
 
 public static class ReadCSV {
@@ -170,27 +217,32 @@ public static class ReadCSV {
    */
   public static CSVUtils ConstructCSV(String src) {
     CSVUtils csvUtils = new CSVUtils();
-    csvUtils.m_table_ = new LinkedList<>();
+    csvUtils.m_table_    = new LinkedList<>();
+    csvUtils.m_hasTitle_ = false;
     boolean lastSplitor = false;
-    csvUtils.m_table_.add(new LinkedList<>());
+    csvUtils.m_table_.add(new ArrayList<>());
     String token;
     char   c = '\0';
-    for (int rows = 0; ! (token = NextToken(src)).isEmpty(); ) {
+    for (int rows = 0, cols = 0, maxcols = Integer.MIN_VALUE; ! (token = NextToken(src)).isEmpty(); ) {
       c = token.charAt(0);
       switch (c) {
         case '\n': case '\r':
-          csvUtils.m_table_.add(new LinkedList<>());
+          csvUtils.m_table_.add(new ArrayList<>());
+          maxcols = Math.max(maxcols, cols);
+          cols = 0;
           rows++;
         case ',':
           if (lastSplitor) {
             csvUtils.m_table_.get(rows - (c != ',' ? 1 : 0))
                              .add("");
+            cols++;
           }
           lastSplitor = true;
           break;
         default:
           csvUtils.m_table_.get(rows)
                            .add(ParseToken(token));
+          cols++;
           lastSplitor = false;
           break;
       }
@@ -199,6 +251,47 @@ public static class ReadCSV {
     if (c == '\n' || c == '\r') {
       csvUtils.m_table_.removeLast();
     }
+    csvUtils.DetCols().m_rows_ = csvUtils.m_table_.size();
+    return csvUtils;
+  }
+
+  public static CSVUtils ConstructCSV(String src, boolean hasTitle) {
+    CSVUtils csvUtils = new CSVUtils();
+    csvUtils.m_table_    = new LinkedList<>();
+    csvUtils.m_hasTitle_ = hasTitle;
+    boolean lastSplitor = false;
+    csvUtils.m_table_.add(new ArrayList<>());
+    String token;
+    char   c = '\0';
+    for (int rows = 0, cols = 0, maxcols = Integer.MIN_VALUE; ! (token = NextToken(src)).isEmpty(); ) {
+      c = token.charAt(0);
+      switch (c) {
+        case '\n': case '\r':
+          csvUtils.m_table_.add(new ArrayList<>());
+          maxcols = Math.max(maxcols, cols);
+          cols = 0;
+          rows++;
+        case ',':
+          if (lastSplitor) {
+            csvUtils.m_table_.get(rows - (c != ',' ? 1 : 0))
+                             .add("");
+            cols++;
+          }
+          lastSplitor = true;
+          break;
+        default:
+          csvUtils.m_table_.get(rows)
+                           .add(ParseToken(token));
+          cols++;
+          lastSplitor = false;
+          break;
+      }
+      src = src.substring(token.length());
+    }
+    if (c == '\n' || c == '\r') {
+      csvUtils.m_table_.removeLast();
+    }
+    csvUtils.DetCols().m_rows_ = csvUtils.m_table_.size();
     return csvUtils;
   }
 
@@ -216,12 +309,10 @@ public static class PortCSV {
     StringBuilder stringBuilder = new StringBuilder().append('"');
     for (int i = 0; ! src.isEmpty() && i < src.length(); i++) {
       char c = src.charAt(i);
-      switch (c) {
-        case '"':
-          stringBuilder.append("\"");
-        default:
-          stringBuilder.append(c);
+      if (c == '"') {
+        stringBuilder.append("\"");
       }
+      stringBuilder.append(c);
     }
     return stringBuilder.append('"')
                         .toString();
@@ -245,6 +336,5 @@ public static class PortCSV {
     return stringBuilder.toString();
   }
 }
-
 
 }
