@@ -9,6 +9,11 @@ import java.util.Map;
 
 public final class UserManager {
 
+/**
+ * Get a list of all users.
+ *
+ * @return a list of all users.
+ */
 public List<Users> GetUsers() {
   return m_users_.values()
                  .stream()
@@ -17,6 +22,13 @@ public List<Users> GetUsers() {
 
 private final Map<String, Users> m_users_ = new HashMap<>();
 
+/**
+ * Registers a new user.
+ *
+ * @param usr the user to register.
+ * @throws UserExistException if the user already exists.
+ * @throws Users.UserInformationInvalidException if the user information is invalid.
+ */
 public void RegisterUser(Users usr) throws UserExistException, Users.UserInformationInvalidException {
   if (usr.GetUserID()
          .isEmpty()) {
@@ -39,16 +51,35 @@ public void RegisterUser(Users usr) throws UserExistException, Users.UserInforma
   m_users_.put(usr.GetUserID(), usr);
 }
 
+/**
+ * Checks if the login credentials are valid.
+ *
+ * @param id the user ID.
+ * @param passwd the user password.
+ * @return true if the credentials are valid, false otherwise.
+ */
 public boolean CheckLogin(String id, String passwd) {
   return m_users_.containsKey(id) && m_users_.get(id)
                                              .GetPasswd()
                                              .equals(passwd);
 }
 
+/**
+ * Checks if a user exists.
+ *
+ * @param id the user ID.
+ * @return true if the user exists, false otherwise.
+ */
 public boolean CheckUser(String id) {
   return m_users_.containsKey(id);
 }
 
+/**
+ * Get user information.
+ *
+ * @param id the user ID.
+ * @return the user information.
+ */
 public Users GetUserInfo(String id) {
   return m_users_.get(id);
 }
@@ -60,6 +91,14 @@ public static final class Users {
   private final String             m_passwd_;
   private final Map<String, int[]> m_scoreRecord_ = new HashMap<>();
 
+  /**
+   * Constructs a new 'Users' object.
+   *
+   * @param ID the user ID.
+   * @param name the user name.
+   * @param passwd the user password.
+   * @throws UserInformationInvalidException if any user information is invalid.
+   */
   public Users(String ID, String name, String passwd) throws UserInformationInvalidException {
     if (ID.isEmpty()) {
       throw new UserInformationInvalidException("User ID cannot be empty.");
@@ -87,6 +126,14 @@ public static final class Users {
     return m_passwd_;
   }
 
+  /**
+   * Adds a score record for a specific topic.
+   *
+   * @param topic the topic.
+   * @param score the score.
+   * @return the updated Users.
+   * @throws IllegalScoreException if the score is invalid.
+   */
   public Users AddRecord(String topic, int score) throws IllegalScoreException {
     if (! m_scoreRecord_.containsKey(topic)) {
       m_scoreRecord_.put(topic, new int[] {Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE});
@@ -100,10 +147,18 @@ public static final class Users {
     return this;
   }
 
+  /**
+   * Get the score records.
+   *
+   * @return a map of score records.
+   */
   public Map<String, int[]> GetScoreRecord() {
     return m_scoreRecord_;
   }
 
+  /**
+   * Exception thrown when user information is invalid.
+   */
   public static class UserInformationInvalidException
       extends RuntimeException {
     UserInformationInvalidException() {
@@ -115,6 +170,9 @@ public static final class Users {
     }
   }
 
+  /**
+   * Exception thrown when a score is invalid.
+   */
   public static class IllegalScoreException
       extends RuntimeException {
     IllegalScoreException() {
@@ -132,8 +190,18 @@ public int GetUserNumbers() {
   return m_users_.size();
 }
 
+/**
+ * load user information and records from files.
+ */
 public static class UserLoader {
 
+  /**
+   * Loads user information from a file.
+   *
+   * @param fp the file path.
+   * @return 'UserManager' with loaded user information.
+   * @throws IOException if an I/O error occurs.
+   */
   public static UserManager LoadUserInfo(String fp) throws IOException {
     File            file        = new File(fp);
     byte[]          content     = new byte[(int)file.length()];
@@ -146,12 +214,23 @@ public static class UserLoader {
       if (l.isEmpty()) {
         break;
       }
+      else if (l.size() < 3) {
+        continue;
+      }
       userManager.RegisterUser(new Users(l.get(0), l.get(1), l.get(2)));
     }
     inputStream.close();
     return userManager;
   }
 
+  /**
+   * Loads user score records from a file.
+   *
+   * @param usert the 'UserManager' object to load records into.
+   * @param fp the file path.
+   * @return the 'UserManager' object with loaded score records.
+   * @throws IOException if an I/O error occurs.
+   */
   public static UserManager LoadUserRecord(UserManager usert, String fp) throws IOException {
     File            file        = new File(fp);
     byte[]          content     = new byte[(int)file.length()];
@@ -179,8 +258,17 @@ public static class UserLoader {
 
 }
 
+/**
+ * save user information and records to files.
+ */
 public static class UserSaver {
 
+  /**
+   * Converts user information to CSV format.
+   *
+   * @param uset the 'UserManager' object.
+   * @return the 'CSVUtils' object containing user information.
+   */
   public static CSVUtils PortToCSV(UserManager uset) {
     var csv = new CSVUtils();
     for (var u : uset.m_users_.values()) {
@@ -196,6 +284,12 @@ public static class UserSaver {
     return csv;
   }
 
+  /**
+   * Converts user score records to CSV format.
+   *
+   * @param usert the 'UserManager' object.
+   * @return the 'CSVUtils' object containing user score records.
+   */
   public static CSVUtils ScoreToCSV(UserManager usert) {
     var csv = new CSVUtils();
     for (var u : usert.m_users_.values()) {
@@ -218,6 +312,13 @@ public static class UserSaver {
     return csv;
   }
 
+  /**
+   * Writes CSV content to a file.
+   *
+   * @param csvUtils the 'CSVUtils' object containing CSV content.
+   * @param fp the file path.
+   * @throws IOException if an I/O error occurs.
+   */
   public static void Write(CSVUtils csvUtils, String fp) throws IOException {
     File file = new File(fp);
     if (file.isDirectory()) {
@@ -235,6 +336,9 @@ public static class UserSaver {
 
 }
 
+/**
+ * Exception thrown when a user already exists.
+ */
 public static class UserExistException
     extends RuntimeException {
   public UserExistException() {
