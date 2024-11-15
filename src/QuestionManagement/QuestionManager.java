@@ -9,6 +9,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class QuestionManager {
@@ -35,6 +38,10 @@ public Map<Difficulty, List<Question>> GetQuestions(String topic) {
 }
 
 public static class QuestionLoader {
+  private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+    return t -> Boolean.TRUE.equals(seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE));
+  }
 
   /**
    * Loads questions from a file.
@@ -47,6 +54,8 @@ public static class QuestionLoader {
     Arrays.stream(IOUtilities.readQuestions(fp))
           .collect(Collectors.groupingBy(Question::getTopic))
           .forEach((x, y) -> questionManagement.m_question_.put(x, y.stream()
+                                                                    .filter(
+                                                                        distinctByKey(Question::getQuestionStatement))
                                                                     .filter(q -> q.getOptions().length > 1 &&
                                                                                  ! q.getQuestionStatement()
                                                                                     .isEmpty() &&

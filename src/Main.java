@@ -85,6 +85,7 @@ private static void prepare() {
     UI.RegisterFunction();
   } catch (IOException e) {
     System.err.println(e.getMessage());
+    System.exit(- 1);
   }
 }
 
@@ -463,7 +464,7 @@ public static final class UI {
       } else {
         String choices = input.nextLine();
         if (choices.contains("q")) {
-          break loop;
+          break;
         } else {
           System.out.println("Illegal Input.");
         }
@@ -473,7 +474,6 @@ public static final class UI {
     var finalscore = 100 * currentCorrect / totalnum;
     System.out.println(" Congratulation, you got: " + finalscore);
     currentLoginUser.AddRecord(topic, finalscore);
-    return;
   }
 
   private interface FunctionHook {
