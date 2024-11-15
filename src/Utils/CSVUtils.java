@@ -35,6 +35,12 @@ public LinkedList<ArrayList<String>> GetCSV() {
   return m_table_;
 }
 
+/**
+ * Sets the title row for the CSV.
+ *
+ * @param title the title row elements.
+ * @return the current CSVUtils instance.
+ */
 public CSVUtils SetTitle(String... title) {
   m_hasTitle_ = true;
   m_cols_     = title.length;
@@ -47,6 +53,11 @@ public CSVUtils SetTitle(String... title) {
   return this;
 }
 
+/**
+ * Removes the title row from the CSV.
+ *
+ * @return the current CSVUtils instance.
+ */
 public CSVUtils RemoveTitle() {
   if (m_hasTitle_) {
     m_table_.remove(0);
@@ -54,50 +65,108 @@ public CSVUtils RemoveTitle() {
   return this;
 }
 
+/**
+ * Gets the element at the specified row and column.
+ *
+ * @param row the row index.
+ * @param col the column index.
+ * @return the element at the specified position.
+ */
 public String GetElement(int row, int col) {
   return m_table_.get(row)
                  .get(col);
 }
 
+/**
+ * Inserts a new empty line at the end of the CSV.
+ *
+ * @return the current CSVUtils instance.
+ */
 public CSVUtils InsertLine() {
   m_table_.add(new ArrayList<>(m_cols_));
   m_rows_++;
   return this;
 }
 
+/**
+ * Inserts a new empty line at the specified row index.
+ *
+ * @param row the row index.
+ * @return the current CSVUtils instance.
+ */
 public CSVUtils InsertLine(int row) {
   m_table_.add(row, new ArrayList<>(m_cols_));
   m_rows_++;
   return this;
 }
 
+/**
+ * Inserts an element at the specified row.
+ *
+ * @param row the row index.
+ * @param val the value to insert.
+ * @return the current CSVUtils instance.
+ */
 public CSVUtils InsertElement(int row, String val) {
   m_table_.get(row)
           .add(val);
   return this;
 }
 
+/**
+ * Sets the line at the specified row.
+ *
+ * @param ros the row index.
+ * @param val the value to set.
+ * @return the current CSVUtils instance.
+ */
 public CSVUtils SetLine(int ros, ArrayList<String> val) {
   m_table_.set(ros, val);
   return this;
 }
 
+/**
+ * Sets the element at the specified row and column.
+ *
+ * @param row the row index.
+ * @param col the column index.
+ * @param val the value to set.
+ * @return the current CSVUtils instance.
+ */
 public CSVUtils SetElement(int row, int col, String val) {
   m_table_.get(row)
           .set(col, val);
   return this;
 }
 
+/**
+ * Clears the element at the specified row and column.
+ *
+ * @param row the row index.
+ * @param col the column index.
+ * @return the cleared element.
+ */
 public String ClearElement(int row, int col) {
   return m_table_.get(row)
                  .set(col, "");
 }
 
+/**
+ * Removes the line at the specified row.
+ *
+ * @param row the row index.
+ * @return the removed line.
+ */
 public ArrayList<String> RemoveLine(int row) {
   m_rows_--;
   return m_table_.remove(row);
 }
 
+/**
+ * Determines the number of columns in the CSV.
+ *
+ * @return the current CSVUtils instance.
+ */
 public CSVUtils DetCols() {
   if (m_hasTitle_) {
     m_cols_ = m_table_.get(0)
@@ -110,6 +179,11 @@ public CSVUtils DetCols() {
   return this;
 }
 
+/**
+ * Resets the number of columns in the CSV.
+ *
+ * @return the current CSVUtils instance.
+ */
 public CSVUtils ReSetCols() {
   return this;
 }
@@ -255,6 +329,13 @@ public static class ReadCSV {
     return csvUtils;
   }
 
+  /**
+   * Parse the source string into a CSVUtils object with a title row.
+   *
+   * @param src the source string to be processed.
+   * @param hasTitle whether the CSV has a title row.
+   * @return a CSVUtils object to be manipulated.
+   */
   public static CSVUtils ConstructCSV(String src, boolean hasTitle) {
     CSVUtils csvUtils = new CSVUtils();
     csvUtils.m_table_    = new LinkedList<>();
