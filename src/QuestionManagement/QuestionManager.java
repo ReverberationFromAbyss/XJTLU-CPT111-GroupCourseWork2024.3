@@ -15,14 +15,31 @@ public class QuestionManager {
 
 private final Map<String, Map<Difficulty, List<Question>>> m_question_ = new HashMap<>();
 
+/**
+ * Get all questions.
+ *
+ * @return a map of all questions grouped by topic and difficulty.
+ */
 public Map<String, Map<Difficulty, List<Question>>> GetQuestions() {
   return m_question_;
 }
 
+/**
+ * Get questions for a specific topic.
+ *
+ * @param topic the topic to retrieve questions for.
+ * @return a map of questions grouped by difficulty for the specified topic.
+ */
 public Map<Difficulty, List<Question>> GetQuestions(String topic) {
   return m_question_.get(topic);
 }
 
+  /**
+   * Loads questions from a file.
+   *
+   * @param fp the file path.
+   * @return ‘QuestionManager’ with loaded questions.
+   */
 public static class QuestionLoader {
   public static QuestionManager LoadQuestion(String fp) {
     var questionManagement = new QuestionManager();
