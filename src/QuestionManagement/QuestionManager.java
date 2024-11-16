@@ -59,8 +59,6 @@ public static class QuestionLoader {
     Arrays.stream(IOUtilities.readQuestions(fp))
           .collect(Collectors.groupingBy(Question::getTopic))
           .forEach((x, y) -> questionManagement.m_question_.put(x, y.stream()
-                                                                    .filter(
-                                                                        distinctByKey(Question::getQuestionStatement))
                                                                     .filter(q -> q.getOptions().length > 1 &&
                                                                                  ! q.getQuestionStatement()
                                                                                     .isEmpty() &&

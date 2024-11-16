@@ -14,7 +14,7 @@
         <option>option 2-1</option>
         <option answer="true">option 2-2</option>
         <option>option 2-3</option>
-        <option answer="true">option 2-4</option>
+        <option>option 2-4</option>
     </question>
     <question difficulty="MEDIUM">
         <topic>English</topic>
