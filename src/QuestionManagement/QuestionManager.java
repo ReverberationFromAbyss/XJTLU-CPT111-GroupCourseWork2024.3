@@ -27,6 +27,11 @@ public Map<String, Map<Difficulty, List<Question>>> GetQuestions() {
   return m_question_;
 }
 
+public String[] GetTopics() {
+  return m_question_.keySet()
+                    .toArray(new String[0]);
+}
+
 /**
  * Get questions for a specific topic.
  *

@@ -8,7 +8,6 @@ import xjtlu.cpt111.assignment.quiz.model.Question;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Main {
 
@@ -420,20 +419,22 @@ public static final class UI {
 
   public static void QuizTaking(String topic, Map<Difficulty, List<Question>> question) {
 
-    List<Question> questionList = new ArrayList<>(question.values()
-                                                          .stream()
-                                                          .flatMap(x -> {
-                                                            var   random   = new Random();
-                                                            int[] currentn = new int[] {0};
-                                                            return x.stream()
-                                                                    .findAny()
-                                                                    .isPresent()
-                                                                   ? x.stream()
-                                                                      .filter(a -> random.nextBoolean() ||
-                                                                                   (currentn[0]++ > 0))
-                                                                   : Stream.empty();
-                                                          })
-                                                          .toList());
+    var            random       = new Random();
+    List<Question> questionList = new ArrayList<>();
+    for (var d : question.values()) {
+      Collections.shuffle(d);
+      int c = 0;
+      for (var q : d) {
+        if (c != 0) {
+          if (random.nextBoolean()) {
+            break;
+          }
+        }
+        questionList.add(q);
+        c++;
+      }
+    }
+
     var totalnum = questionList.size();
     Collections.shuffle(questionList);
 
