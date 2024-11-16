@@ -443,7 +443,12 @@ public static final class UI {
       System.out.println(splitBar3);
       var ansMap = new HashMap<Integer, Option>();
       var co     = 1;
-      for (var o : q.getOptions()) {
+
+      // Shuffle the options before displaying them
+      List<Option> options = new ArrayList<>(List.of(q.getOptions()));
+      Collections.shuffle(options);
+
+      for (var o : options) {
         System.out.println(" " + co + ") " + o.getAnswer());
         ansMap.put(co++, o);
       }
