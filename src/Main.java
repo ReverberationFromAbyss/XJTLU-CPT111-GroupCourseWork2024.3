@@ -425,10 +425,8 @@ public static final class UI {
       Collections.shuffle(d);
       int c = 0;
       for (var q : d) {
-        if (c != 0) {
-          if (random.nextBoolean()) {
-            break;
-          }
+        if (c != 0 && random.nextBoolean()) {
+          continue;
         }
         questionList.add(q);
         c++;
