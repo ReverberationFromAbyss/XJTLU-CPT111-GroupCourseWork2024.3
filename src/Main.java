@@ -244,10 +244,10 @@ public static final class UI {
 
     int[]                           current  = new int[] {1};
     Map<Integer, List<ScoreRecord>> topicMap = new HashMap<>();
-    boolean                         exit     = false;
+    boolean                         exit     = true;
 
     System.out.println(splitBar);
-    System.out.println("Score Rank List: topic Selection: ");
+    System.out.println("Score Rank List: ");
     System.out.println(splitBar2);
 
     // register all user's records
@@ -264,45 +264,50 @@ public static final class UI {
     var topicrecord = records.stream()
                              .collect(Collectors.groupingBy(x -> x.topic));
 
-    // Print Topic for selection
-    topicrecord.forEach((x, y) -> {
-      System.out.println(" " + current[0] + ") " + x);
-      topicMap.put(current[0]++, y);
-      if (current[0] % 10 == 0) {
-        System.out.print("Press <Enter> key to continue:");
-        try {
-          System.in.read();
-        } catch (IOException e) {
-          System.err.println(e.getMessage());
-        }
-      }
-    });
-
-    System.out.println(splitBar2);
-    System.out.print("Select an option <Type a integer here, 'q' to exit>: ");
-    var     input   = new Scanner(System.in);
-    int     choice  = Integer.MIN_VALUE;
-    boolean inputed = false;
-    if (input.hasNextInt() && (inputed = true) && topicMap.containsKey(choice = input.nextInt())) {
-      // Sort the records, larger on the upper
-      var r = topicMap.get(choice);
-
-      r.sort((x, y) -> y.score - x.score);
-      for (var e : r) {
-        if (e.score >= 0) {
-          System.out.println(e.username + " ... " + e.score);
-        }
-      }
-    } else if (inputed) {
-      System.out.println("Illegal input.");
-    } else {
-      String choices = input.nextLine();
-      if (choices.contains("q")) {
-        exit = true;
-      } else {
-        System.out.println("Illegal Input.");
-      }
+    for (var topic : topicrecord.keySet()) {
+      var list = topicrecord.get(topic);
+      list.sort((x, y) -> y.score - x.score);
+      System.out.printf("%20s %20s %5d\n", topic, list.get(0).username, list.get(0).score);
     }
+    // Print Topic for selection
+    // topicrecord.forEach((x, y) -> {
+    //   System.out.println(" " + current[0] + ") " + x);
+    //   topicMap.put(current[0]++, y);
+    //   if (current[0] % 10 == 0) {
+    //     System.out.print("Press <Enter> key to continue:");
+    //     try {
+    //       System.in.read();
+    //     } catch (IOException e) {
+    //       System.err.println(e.getMessage());
+    //     }
+    //   }
+    // });
+
+    // System.out.println(splitBar2);
+    // System.out.print("Select an option <Type a integer here, 'q' to exit>: ");
+    // var     input   = new Scanner(System.in);
+    // int     choice  = Integer.MIN_VALUE;
+    // boolean inputed = false;
+    // if (input.hasNextInt() && (inputed = true) && topicMap.containsKey(choice = input.nextInt())) {
+    //   // Sort the records, larger on the upper
+    //   var r = topicMap.get(choice);
+
+    //   r.sort((x, y) -> y.score - x.score);
+    //   for (var e : r) {
+    //     if (e.score >= 0) {
+    //       System.out.println(e.username + " ... " + e.score);
+    //     }
+    //   }
+    // } else if (inputed) {
+    //   System.out.println("Illegal input.");
+    // } else {
+    //   String choices = input.nextLine();
+    //   if (choices.contains("q")) {
+    //     exit = true;
+    //   } else {
+    //     System.out.println("Illegal Input.");
+    //   }
+    // }
 
     return exit;
   }

@@ -26,7 +26,7 @@ private final Map<String, Users> m_users_ = new HashMap<>();
  * Registers a new user.
  *
  * @param usr the user to register.
- * @throws UserExistException if the user already exists.
+ * @throws UserExistException                    if the user already exists.
  * @throws Users.UserInformationInvalidException if the user information is invalid.
  */
 public void RegisterUser(Users usr) throws UserExistException, Users.UserInformationInvalidException {
@@ -45,7 +45,7 @@ public void RegisterUser(Users usr) throws UserExistException, Users.UserInforma
   m_users_.forEach((x, y) -> {
     if (usr.GetUserID()
            .equals(y.GetUserID())) {
-      throw new UserExistException();
+      throw new UserExistException("There exists a user whose id is " + usr.m_userID_);
     }
   });
   m_users_.put(usr.GetUserID(), usr);
@@ -54,7 +54,7 @@ public void RegisterUser(Users usr) throws UserExistException, Users.UserInforma
 /**
  * Checks if the login credentials are valid.
  *
- * @param id the user ID.
+ * @param id     the user ID.
  * @param passwd the user password.
  * @return true if the credentials are valid, false otherwise.
  */
@@ -94,8 +94,8 @@ public static final class Users {
   /**
    * Constructs a new 'Users' object.
    *
-   * @param ID the user ID.
-   * @param name the user name.
+   * @param ID     the user ID.
+   * @param name   the user name.
    * @param passwd the user password.
    * @throws UserInformationInvalidException if any user information is invalid.
    */
@@ -213,8 +213,7 @@ public static class UserLoader {
     for (var l : csv.GetCSV()) {
       if (l.isEmpty()) {
         break;
-      }
-      else if (l.size() < 3) {
+      } else if (l.size() < 3) {
         continue;
       }
       userManager.RegisterUser(new Users(l.get(0), l.get(1), l.get(2)));
@@ -227,7 +226,7 @@ public static class UserLoader {
    * Loads user score records from a file.
    *
    * @param usert the 'UserManager' object to load records into.
-   * @param fp the file path.
+   * @param fp    the file path.
    * @return the 'UserManager' object with loaded score records.
    * @throws IOException if an I/O error occurs.
    */
@@ -316,7 +315,7 @@ public static class UserSaver {
    * Writes CSV content to a file.
    *
    * @param csvUtils the 'CSVUtils' object containing CSV content.
-   * @param fp the file path.
+   * @param fp       the file path.
    * @throws IOException if an I/O error occurs.
    */
   public static void Write(CSVUtils csvUtils, String fp) throws IOException {
